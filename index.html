@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>La Era de Hielo | Restaurante & Heladería</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F0E8;
+            color: #2C2B28;
+            line-height: 1.5;
+            padding-bottom: 80px;
+        }
+        :root {
+            --bg-light: #F5F0E8;
+            --bg-card: #FEFCF8;
+            --primary: #C27E4A;
+            --primary-dark: #A56133;
+            --secondary: #6B8C5C;
+            --text-dark: #2E2B27;
+            --text-muted: #5E5B56;
+            --border-light: #E6DFD3;
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 500; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo h1 { font-size: 1.6rem; color: var(--primary-dark); }
+        .logo p { font-size: 0.7rem; color: var(--text-muted); }
+        /* Botón admin (candado) */
+        .admin-header-btn {
+            background: #2E2B27;
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .admin-header-btn.logged {
+            background: var(--primary);
+            color: #2E2B27;
+        }
+        /* Hero dinámico */
+        .hero {
+            background: linear-gradient(110deg, #EADBC6 0%, #F5F0E8 100%);
+            padding: 28px 0 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .hero h2 { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 8px; }
+        .hero p { margin-top: 8px; color: var(--text-muted); font-size: 0.9rem; }
+        .badge-hours {
+            background: #E9DFD1;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .categoria-economico {
+            font-size: 0.9rem;
+            background: rgba(194,126,74,0.1);
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 40px;
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+        /* Categorías */
+        .categories-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 28px 0 20px;
+        }
+        .cat-btn {
+            background: white;
+            border: 1px solid var(--border-light);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .cat-btn.active, .cat-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        /* Secciones carrusel */
+        .menu-section { display: none; margin-bottom: 30px; }
+        .menu-section.active-section { display: block; }
+        .section-title {
+            font-size: 1.8rem;
+            border-left: 6px solid var(--primary);
+            padding-left: 18px;
+            margin: 30px 0 24px 0;
+        }
+        .swiper-menu {
+            width: 100%;
+            overflow: hidden;
+            padding: 8px 0 20px 0;
+        }
+        .swiper-wrapper {
+            transition-timing-function: linear !important;
+            display: flex;
+        }
+        .swiper-slide {
+            width: auto !important;
+            flex-shrink: 0;
+            margin-right: 20px;
+        }
+        .menu-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 18px;
+            width: 280px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            transition: transform 0.2s;
+            height: 100%;
+        }
+        @media (max-width: 640px) {
+            .menu-card { width: 260px; }
+            .swiper-slide { margin-right: 14px; }
+        }
+        .menu-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .price {
+            font-weight: 700;
+            color: var(--primary-dark);
+            background: #F2E8DD;
+            padding: 3px 10px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .desc { color: var(--text-muted); font-size: 0.8rem; margin-top: 6px; }
+        .ver-mas-container { text-align: center; margin: 10px 0 30px; }
+        .btn-ver-mas {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-ver-mas:hover { background: var(--primary-dark); transform: scale(1.02); }
+        /* Vista completa (grid) */
+        .categoria-completa { display: none; margin: 30px 0; }
+        .categoria-completa.active { display: block; }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #6B8C5C;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
+        .grid-completo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        /* Mapa */
+        .map-container {
+            margin: 20px 0 30px;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+        .map-container iframe {
+            width: 100%;
+            height: 320px;
+            border: 0;
+            display: block;
+        }
+        /* Footer */
+        footer {
+            background: #2E2B27;
+            color: #D9D2C5;
+            padding: 40px 0 30px;
+            margin-top: 20px;
+        }
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 32px;
+            align-items: center;
+        }
+        .footer-info i { width: 28px; color: var(--primary); }
+        .footer-whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .footer-whatsapp-btn:hover { background: #128C7E; }
+        .float-whatsapp {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 1000;
+            text-decoration: none;
+        }
+        /* Modales */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            max-width: 500px;
+            width: 90%;
+            border-radius: 28px;
+            padding: 24px;
+        }
+        .modal-content input, .modal-content textarea, .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            font-family: inherit;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+        }
+        /* Admin panel */
+        .admin-panel {
+            background: var(--bg-card);
+            margin: 20px 0;
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+        }
+        .admin-panel h3 { margin-bottom: 16px; color: var(--primary-dark); }
+        .admin-section { margin-bottom: 30px; border-bottom: 1px solid var(--border-light); padding-bottom: 20px; }
+        .admin-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+        .admin-card {
+            background: #F9F6F0;
+            padding: 12px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .admin-card button { background: #ddd; border: none; padding: 4px 12px; border-radius: 20px; cursor: pointer; margin-left: 8px; }
+        .admin-card button.danger { background: #e74c3c; color: white; }
+        button.small { padding: 4px 12px; font-size: 0.8rem; }
+        @media (max-width: 780px) {
+            .container { padding: 0 16px; }
+            .footer-content { flex-direction: column; text-align: center; }
+            .float-whatsapp { width: 50px; height: 50px; font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="container header-content">
+        <div class="logo">
+            <h1 id="siteTitle">❄️ La Era de Hielo</h1>
+            <p id="siteSubtitle">Restaurante & Heladería · Tibú, NS</p>
+        </div>
+        <button id="adminLockBtn" class="admin-header-btn"><i class="fas fa-lock"></i></button>
+    </div>
+</header>
+
+<div class="hero">
+    <div class="container">
+        <h2 id="heroTitle">🍦 Sabor glaciar · Pasión tropical</h2>
+        <p id="heroDynamicMessage" class="categoria-economico">✨ Descubre nuestras delicias ✨</p>
+        <p><span class="badge-hours" id="hoursBadge"><i class="far fa-clock"></i> Cerrado · Abre a las 3:00 p.m.</span> &nbsp; | &nbsp; <i class="fas fa-tag"></i> <span id="heroTag">Postres, comidas típicas, cervezas y más</span></p>
+    </div>
+</div>
+
+<div class="container">
+    <div id="mainMenuView">
+        <div class="categories-nav" id="categoryFilter"></div>
+        <div id="sectionsContainer"></div>
+    </div>
+    <div id="categoriaCompletaView" class="categoria-completa">
+        <button id="backToMenuBtn" class="back-button"><i class="fas fa-arrow-left"></i> Volver al menú principal</button>
+        <div class="section-title" id="categoriaTitulo"></div>
+        <div id="categoriaGrid" class="grid-completo"></div>
+    </div>
+    <div id="adminPanelContainer" style="display: none;"></div>
+    <div class="map-container">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3944.123456789!2d-72.456789!3d8.639123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e5f8b2c9a4b6d1f%3A0x2c3b4a5d6e7f8a9b!2sCra.%204%20%236-54%2C%20Tib%C3%BA%2C%20Norte%20de%20Santander!5e0!3m2!1ses!2sco!4v1712345678901!5m2!1ses!2sco" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+</div>
+
+<footer>
+    <div class="container footer-content">
+        <div class="footer-info">
+            <p><i class="fas fa-map-pin"></i> <span id="footerAddress">Cra. 4 #6-54, Tibú</span></p>
+            <p><i class="fas fa-phone-alt"></i> <span id="footerPhone">316 7311299</span></p>
+            <p><i class="fab fa-whatsapp"></i> <span id="footerWhatsapp">316 7311299</span></p>
+        </div>
+        <div class="footer-info">
+            <p><i class="fas fa-ice-cream"></i> Helados artesanales, comidas típicas</p>
+            <a href="#" id="footerWhatsAppBtn" class="footer-whatsapp-btn"><i class="fab fa-whatsapp"></i> Pedir por WhatsApp</a>
+        </div>
+    </div>
+    <div class="container" style="text-align:center; margin-top:24px; font-size:0.7rem;">❄️ La Era de Hielo · Precios COP</div>
+</footer>
+
+<a href="#" id="floatWhatsappBtn" class="float-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
+<!-- Modales -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <h3>Acceso administrador</h3>
+        <input type="email" id="loginEmail" placeholder="Correo electrónico" value="admin@ejemplo.com">
+        <input type="password" id="loginPassword" placeholder="Contraseña" value="admin123">
+        <div class="modal-buttons">
+            <button id="loginBtn" class="btn-primary">Iniciar sesión</button>
+            <button id="closeLoginModal">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <h3 id="productModalTitle">Editar producto</h3>
+        <input type="text" id="productName" placeholder="Nombre">
+        <input type="number" id="productPrice" placeholder="Precio COP">
+        <textarea id="productDesc" rows="2" placeholder="Descripción"></textarea>
+        <div class="modal-buttons">
+            <button id="saveProductBtn" class="btn-primary">Guardar</button>
+            <button id="closeProductModal">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="categoryModal" class="modal">
+    <div class="modal-content">
+        <h3 id="categoryModalTitle">Editar categoría</h3>
+        <input type="text" id="categoryName" placeholder="Nombre (ej: 🍕 Pizzas)">
+        <div class="modal-buttons">
+            <button id="saveCategoryBtn" class="btn-primary">Guardar</button>
+            <button id="closeCategoryModal">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="generalModal" class="modal">
+    <div class="modal-content">
+        <h3>Editar información general</h3>
+        <input type="text" id="genSiteTitle" placeholder="Título del sitio">
+        <input type="text" id="genSubtitle" placeholder="Subtítulo">
+        <input type="text" id="genHeroTitle" placeholder="Título hero (por defecto)">
+        <input type="text" id="genHeroTag" placeholder="Tag hero (por defecto)">
+        <input type="text" id="genHours" placeholder="Horario">
+        <input type="text" id="genAddress" placeholder="Dirección">
+        <input type="text" id="genPhone" placeholder="Teléfono">
+        <input type="text" id="genWhatsapp" placeholder="WhatsApp">
+        <div class="modal-buttons">
+            <button id="saveGeneralBtn" class="btn-primary">Guardar</button>
+            <button id="closeGeneralBtn">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    // ---------- DATOS DEL MENÚ (estructura inicial) ----------
+    let menuStructure = {
+        ensaladas: { titulo: "🍍 Ensaladas de Frutas", items: [
+            { nombre: "Solo Fruta", precio: 15000, desc: "Melón, papaya, banano, pera, manzana, Kiwi, fresa, uva, durazno y Mango" },
+            { nombre: "Yogurt y Cereal", precio: 20000, desc: "Base de frutas + yogurt y cereal" },
+            { nombre: "Ensalada con 1 bola de helado", precio: 21000, desc: "Frutas + 1 bola de helado" },
+            { nombre: "Ensalada con 2 bolas de helado", precio: 23000, desc: "Frutas + 2 bolas" },
+            { nombre: "Bola adicional de helado", precio: 3500, desc: "Extra" }
+        ]},
+        helados: { titulo: "🍨 Helados & Fantasías", items: [
+            { nombre: "Fantasía De Fresa", precio: 16000, desc: "2 bolas, fresa, chantillí" },{ nombre: "Fantasía Chocolate", precio: 18000 },
+            { nombre: "Peach Melba", precio: 16000 },{ nombre: "Tutti Fruti", precio: 16000 },{ nombre: "Copa Especial", precio: 18000 },
+            { nombre: "Choco-Oreo", precio: 18000 },{ nombre: "Maracumango", precio: 15000 },{ nombre: "Chocofresa", precio: 18000 },
+            { nombre: "Banana Split", precio: 16000 },{ nombre: "Hot Brownie", precio: 14000 }
+        ]},
+        infantiles: { titulo: "🐧 Helados Infantiles", items: [
+            { nombre: "Gusanito", precio: 15000 },{ nombre: "Payasito", precio: 13000 },{ nombre: "Araña", precio: 13000 },
+            { nombre: "Mickey", precio: 13000 },{ nombre: "Buho", precio: 13000 },{ nombre: "Osito", precio: 13000 },
+            { nombre: "Copa Masmelos", precio: 15000 },{ nombre: "Pollito", precio: 13000 }
+        ]},
+        waffles: { titulo: "🧇 Waffles", items: [
+            { nombre: "Waffle Solo Fruta", precio: 15000 },{ nombre: "Especial", precio: 20000 },{ nombre: "Frutas Y Helado", precio: 20000 },
+            { nombre: "Chocolate", precio: 22000 },{ nombre: "Waffle Chocofresa", precio: 22000 },{ nombre: "Waffle Tentación", precio: 22000 }
+        ]},
+        micheladas: { titulo: "🍹 Micheladas", items: [
+            { nombre: "Michelada Mango", precio: 10000 },{ nombre: "Michelada Maracuyá", precio: 10000 },{ nombre: "Michelada Manzana Verde", precio: 10000 },
+            { nombre: "Michelada Frutos Rojos", precio: 12000 },{ nombre: "Michelada Tropical", precio: 13000 },{ nombre: "Michelada Kids", precio: 10000 }
+        ]},
+        cervezas: { titulo: "🍺 Cervezas", items: [{ nombre: "Corona", precio: 7000 },{ nombre: "Club Colombia", precio: 7000 },{ nombre: "Poker", precio: 6000 },{ nombre: "Águila Light", precio: 6000 },{ nombre: "Costeña", precio: 6000 },{ nombre: "Smirnoff", precio: 18000 }] },
+        snacks: { titulo: "🍿 Snacks", items: [{ nombre: "Papas Margarita", precio: 3500 },{ nombre: "Detodito", precio: 3500 },{ nombre: "Brownie", precio: 5000 },{ nombre: "Gomitas", precio: 3500 }] },
+        bebidas: { titulo: "🥤 Bebidas", items: [{ nombre: "Postobón 350ml", precio: 3500 },{ nombre: "Coca-Cola 350ml", precio: 3500 },{ nombre: "Gatorade", precio: 4500 },{ nombre: "Agua", precio: 2000 }] },
+        jugos: { titulo: "🥭 Jugos Naturales", items: [{ nombre: "Jugo de Fresa", precio: 10000 },{ nombre: "Jugo de Lulo", precio: 10000 },{ nombre: "Jugo de Mora", precio: 10000 },{ nombre: "Milo", precio: 14000 }] },
+        platosfuertes: { titulo: "🍖 Platos Fuertes", items: [{ nombre: "Pechuga a la plancha", precio: 25000 },{ nombre: "Trucha al ajillo", precio: 30000 },{ nombre: "Churrasco", precio: 30000 },{ nombre: "Parrilla mixta", precio: 40000 }] },
+        picadas: { titulo: "🍢 Picadas", items: [{ nombre: "Picada Mini", precio: 20000 }] },
+        patacones: { titulo: "🍌 Patacones", items: [{ nombre: "Patacón de Carne", precio: 22000 },{ nombre: "Patacón de Pollo", precio: 22000 },{ nombre: "Patacón Mixto", precio: 26000 }] },
+        perros: { titulo: "🌭 Perros Calientes", items: [{ nombre: "Perro Pico de Hielo", precio: 14000 },{ nombre: "Perro Crunch de Scrat", precio: 18000 },{ nombre: "Perro Combo Glacial", precio: 21000 }] },
+        hamburguesas: { titulo: "🍔 Hamburguesas", items: [{ nombre: "Hamburguesa Glacial", precio: 15000 },{ nombre: "Hamburguesa Mamut", precio: 20000 },{ nombre: "Hamburguesa Avalancha", precio: 20000 },{ nombre: "Hamburguesa La Era de Hielo", precio: 25000 }] },
+        salchipapas: { titulo: "🍟 Salchipapas", items: [{ nombre: "Salchipapa Mini", precio: 10000 },{ nombre: "Salchipapa", precio: 20000 },{ nombre: "Salchipollo", precio: 23000 }] },
+        alitas: { titulo: "🍗 Alitas", items: [{ nombre: "Alitas BBQ (3und)", precio: 22000 },{ nombre: "Alitas Picantes (5und)", precio: 32000 }] },
+        costillas: { titulo: "🥩 Costillas", items: [{ nombre: "Costillas Ahumadas", precio: 24000 },{ nombre: "Costillas BBQ", precio: 26000 }] },
+        sandwiches: { titulo: "🥪 Sándwiches", items: [{ nombre: "Jamón y queso", precio: 5000 },{ nombre: "Pollo", precio: 14000 },{ nombre: "Carne", precio: 14000 },{ nombre: "Mixto", precio: 17000 }] },
+        arepas: { titulo: "🫓 Arepas Rellenas", items: [{ nombre: "Arepa Carne", precio: 12000 },{ nombre: "Arepa Pollo", precio: 12000 },{ nombre: "Arepa Mixta", precio: 14000 }] },
+        broaster: { titulo: "🍗 Pollo Broaster", items: [{ nombre: "Pollo cuarto", precio: 15000 },{ nombre: "Pollo medio", precio: 26000 },{ nombre: "Pollo entero", precio: 50000 },{ nombre: "Mollejas", precio: 20000 }] },
+        ceviche: { titulo: "🦐 Cevichería", items: [{ nombre: "Ceviche de Camarones", precio: 25000 },{ nombre: "Cóctel de Camarones", precio: 25000 }] },
+        cocteles: { titulo: "🍸 Cocteles", items: [{ nombre: "Asícalao", precio: 14000 },{ nombre: "Bandolero", precio: 14000 },{ nombre: "Bellaco", precio: 14000 }] },
+        cremosos: { titulo: "🥛 Cremosos", items: [{ nombre: "Baileys", precio: 14000 },{ nombre: "Piña Colada", precio: 14000 }] },
+        empacados: { titulo: "🍧 Helados Empacados", items: [{ nombre: "Choco Cono", precio: 5000 },{ nombre: "Casero", precio: 3500 },{ nombre: "Artesanal", precio: 4500 }] }
+    };
+
+    const categoriaFrases = {
+        ensaladas: "Frutas frescas y naturales 🍍", helados: "Cremosos y refrescantes 🍦", infantiles: "Diversión y sabor para los más pequeños 🎈",
+        waffles: "Crujientes y dulces como tú 🧇", micheladas: "Refrescantes y con un toque especial 🍹", cervezas: "Las mejores cervezas para brindar 🍺",
+        snacks: "Perfectos para compartir 🍿", bebidas: "Hidratación y sabor en cada sorbo 🥤", jugos: "Naturales y llenos de vitaminas 🥭",
+        platosfuertes: "Platos contundentes para los más exigentes 🍖", picadas: "Ideal para compartir en grupo 🍢", patacones: "Tradición y sabor en cada bocado 🍌",
+        perros: "Los perros más originales de la ciudad 🌭", hamburguesas: "Jugosas y con los mejores ingredientes 🍔", salchipapas: "Clásico que nunca falla 🍟",
+        alitas: "Picantes o BBQ, tú decides 🍗", costillas: "Ahumadas y a la parrilla 🥩", sandwiches: "Prácticos y deliciosos 🥪",
+        arepas: "El sabor de Colombia en una arepa 🫓", broaster: "Crujientes por fuera, tiernas por dentro 🍗", ceviche: "Frescura del mar en tu mesa 🦐",
+        cocteles: "Cócteles con carácter 🍸", cremosos: "Bebidas suaves y tentadoras 🥛", empacados: "Helados para llevar a cualquier parte 🍧"
+    };
+
+    let currentSwiper = null, currentActiveCategory = null;
+    let adminLoggedIn = false;
+
+    // Persistencia
+    function saveMenuToLocal() { localStorage.setItem('laEraMenu', JSON.stringify(menuStructure)); }
+    function loadMenuFromLocal() { const data = localStorage.getItem('laEraMenu'); if(data) menuStructure = JSON.parse(data); }
+    loadMenuFromLocal();
+
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m=>({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+    function getCheapestItem(categoryKey) {
+        const cat = menuStructure[categoryKey];
+        if (!cat || !cat.items.length) return null;
+        let cheapest = cat.items[0];
+        for (let i = 1; i < cat.items.length; i++) {
+            if (cat.items[i].precio !== null && (cheapest.precio === null || cat.items[i].precio < cheapest.precio)) cheapest = cat.items[i];
+        }
+        return cheapest;
+    }
+
+    function updateHeroForCategory(categoryKey) {
+        const cat = menuStructure[categoryKey];
+        if (!cat) return;
+        document.getElementById('heroTitle').innerHTML = `${cat.titulo} · Elige tu favorito`;
+        const cheapest = getCheapestItem(categoryKey);
+        if (cheapest && cheapest.precio !== null) {
+            document.getElementById('heroDynamicMessage').innerHTML = `💰 Más económico: ${escapeHtml(cheapest.nombre)} · $${cheapest.precio.toLocaleString()} 💰`;
+        } else if (cheapest) {
+            document.getElementById('heroDynamicMessage').innerHTML = `✨ Lo más económico: ${escapeHtml(cheapest.nombre)} ✨`;
+        } else {
+            document.getElementById('heroDynamicMessage').innerHTML = `✨ Explora nuestros sabores únicos ✨`;
+        }
+        const frase = categoriaFrases[categoryKey] || `Disfruta lo mejor de ${cat.titulo.replace(/[^\w]/g, '')}`;
+        document.getElementById('heroTag').innerHTML = frase;
+    }
+
+    function resetHeroToDefault() {
+        document.getElementById('heroTitle').innerHTML = localStorage.getItem('gen_heroTitle') || "🍦 Sabor glaciar · Pasión tropical";
+        document.getElementById('heroDynamicMessage').innerHTML = "✨ Descubre nuestras delicias ✨";
+        document.getElementById('heroTag').innerHTML = localStorage.getItem('gen_heroTag') || "Postres, comidas típicas, cervezas y más";
+    }
+
+    // Render público
+    function renderFullMenu() {
+        const container = document.getElementById('sectionsContainer');
+        if(!container) return;
+        container.innerHTML = '';
+        for(const [key, cat] of Object.entries(menuStructure)) {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.id = key;
+            sectionDiv.className = 'menu-section';
+            sectionDiv.innerHTML = `<div class="section-title">${cat.titulo}</div><div class="swiper-menu swiper"><div class="swiper-wrapper" id="wrapper-${key}"></div></div><div class="ver-mas-container"><a href="#" class="btn-ver-mas" data-categoria="${key}">Ver más <i class="fas fa-arrow-right"></i></a></div>`;
+            container.appendChild(sectionDiv);
+            const wrapper = sectionDiv.querySelector('.swiper-wrapper');
+            cat.items.forEach((item) => {
+                const slide = document.createElement('div');
+                slide.className = 'swiper-slide';
+                const precioStr = (item.precio !== null && item.precio !== undefined) ? `$${item.precio.toLocaleString()}` : 'Consultar';
+                slide.innerHTML = `<div class="menu-card"><div class="card-title"><span>${escapeHtml(item.nombre)}</span><span class="price">${precioStr}</span></div><div class="desc">${escapeHtml(item.desc || '')}</div></div>`;
+                wrapper.appendChild(slide);
+            });
+        }
+        rebuildCategoryButtons();
+        const firstKey = Object.keys(menuStructure)[0];
+        if(firstKey) {
+            switchToCategory(firstKey);
+            updateHeroForCategory(firstKey);
+        }
+        document.querySelectorAll('.btn-ver-mas').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const categoria = btn.dataset.categoria;
+                mostrarCategoriaCompleta(categoria);
+                updateHeroForCategory(categoria);
+            });
+        });
+    }
+
+    function initSwiperForCategory(categoryId) {
+        const section = document.getElementById(categoryId);
+        if(!section) return null;
+        const swiperContainer = section.querySelector('.swiper-menu');
+        if(!swiperContainer) return null;
+        if(currentSwiper) currentSwiper.destroy(true, true);
+        const swiper = new Swiper(swiperContainer, {
+            spaceBetween: 20, grabCursor: true, freeMode: true, loop: true, slidesPerView: "auto",
+            speed: 11000, autoplay: { delay: 0, disableOnInteraction: false }
+        });
+        const wrapper = swiperContainer.querySelector('.swiper-wrapper');
+        if(wrapper) wrapper.style.transitionTimingFunction = 'linear';
+        return swiper;
+    }
+
+    function switchToCategory(categoryId) {
+        document.querySelectorAll('.menu-section').forEach(sec => sec.classList.remove('active-section'));
+        const target = document.getElementById(categoryId);
+        if(target) target.classList.add('active-section');
+        currentActiveCategory = categoryId;
+        if(currentSwiper) currentSwiper.destroy(true, true);
+        currentSwiper = initSwiperForCategory(categoryId);
+    }
+
+    function rebuildCategoryButtons() {
+        const filterDiv = document.getElementById('categoryFilter');
+        filterDiv.innerHTML = '';
+        for(const key of Object.keys(menuStructure)) {
+            const btn = document.createElement('button');
+            btn.className = 'cat-btn';
+            btn.innerText = menuStructure[key].titulo.split(' ').slice(1).join(' ') || key;
+            btn.dataset.cat = key;
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+                btn.classList.add('active');
+                switchToCategory(key);
+                updateHeroForCategory(key);
+            });
+            filterDiv.appendChild(btn);
+        }
+        document.querySelector('.cat-btn')?.classList.add('active');
+    }
+
+    function mostrarCategoriaCompleta(categoriaKey) {
+        const cat = menuStructure[categoriaKey];
+        if(!cat) return;
+        document.getElementById('mainMenuView').style.display = 'none';
+        document.getElementById('categoriaCompletaView').classList.add('active');
+        document.getElementById('categoriaTitulo').innerText = cat.titulo;
+        const grid = document.getElementById('categoriaGrid');
+        grid.innerHTML = '';
+        cat.items.forEach((item) => {
+            const precioStr = (item.precio !== null && item.precio !== undefined) ? `$${item.precio.toLocaleString()}` : 'Consultar';
+            const card = document.createElement('div');
+            card.className = 'menu-card';
+            card.style.width = '100%';
+            card.innerHTML = `<div class="card-title"><span>${escapeHtml(item.nombre)}</span><span class="price">${precioStr}</span></div><div class="desc">${escapeHtml(item.desc || '')}</div>`;
+            grid.appendChild(card);
+        });
+        const url = new URL(window.location);
+        url.searchParams.set('categoria', categoriaKey);
+        window.history.pushState({}, '', url);
+        updateHeroForCategory(categoriaKey);
+    }
+
+    function volverAlMenu() {
+        document.getElementById('mainMenuView').style.display = 'block';
+        document.getElementById('categoriaCompletaView').classList.remove('active');
+        if(currentActiveCategory) {
+            switchToCategory(currentActiveCategory);
+            updateHeroForCategory(currentActiveCategory);
+        }
+        const url = new URL(window.location);
+        url.searchParams.delete('categoria');
+        window.history.pushState({}, '', url);
+    }
+
+    // Admin panel
+    function renderAdminPanel() {
+        const container = document.getElementById('adminPanelContainer');
+        container.style.display = 'block';
+        container.innerHTML = `
+            <div class="admin-panel">
+                <h3><i class="fas fa-cog"></i> Panel de Administración</h3>
+                <div class="admin-section">
+                    <h4>Información General</h4>
+                    <button id="editGeneralInfoBtn" class="btn-primary small">Editar info general</button>
+                </div>
+                <div class="admin-section">
+                    <h4>Categorías</h4>
+                    <button id="addCategoryBtn" class="btn-primary small">+ Nueva categoría</button>
+                    <div id="categoriesList" class="admin-grid"></div>
+                </div>
+                <div class="admin-section">
+                    <h4>Productos (selecciona una categoría)</h4>
+                    <select id="adminCategorySelect"></select>
+                    <button id="addProductBtn" class="btn-primary small">+ Nuevo producto</button>
+                    <div id="productsList" class="admin-grid"></div>
+                </div>
+                <button id="logoutAdminBtn" class="admin-footer-btn" style="background:#e74c3c;">Cerrar sesión</button>
+            </div>
+        `;
+        refreshAdminCategories();
+        document.getElementById('adminCategorySelect').addEventListener('change', () => refreshAdminProducts());
+        document.getElementById('addCategoryBtn').onclick = () => openCategoryModal(null);
+        document.getElementById('addProductBtn').onclick = () => openProductModal(null);
+        document.getElementById('editGeneralInfoBtn').onclick = () => openGeneralModal();
+        document.getElementById('logoutAdminBtn').onclick = () => logoutAdmin();
+    }
+
+    function refreshAdminCategories() {
+        const listDiv = document.getElementById('categoriesList');
+        listDiv.innerHTML = '';
+        for(let key in menuStructure) {
+            const div = document.createElement('div');
+            div.className = 'admin-card';
+            div.innerHTML = `<strong>${menuStructure[key].titulo}</strong> <div><button class="edit-category" data-key="${key}">Editar</button><button class="delete-category danger" data-key="${key}">Eliminar</button></div>`;
+            listDiv.appendChild(div);
+        }
+        document.querySelectorAll('.edit-category').forEach(btn => btn.addEventListener('click', (e) => openCategoryModal(btn.dataset.key)));
+        document.querySelectorAll('.delete-category').forEach(btn => btn.addEventListener('click', (e) => { if(confirm('¿Eliminar categoría y todos sus productos?')) deleteCategory(btn.dataset.key); }));
+        const select = document.getElementById('adminCategorySelect');
+        select.innerHTML = '';
+        for(let key in menuStructure) {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = menuStructure[key].titulo;
+            select.appendChild(option);
+        }
+        refreshAdminProducts();
+    }
+
+    function refreshAdminProducts() {
+        const catKey = document.getElementById('adminCategorySelect').value;
+        if(!catKey) return;
+        const products = menuStructure[catKey].items;
+        const container = document.getElementById('productsList');
+        container.innerHTML = '';
+        products.forEach((prod, idx) => {
+            const div = document.createElement('div');
+            div.className = 'admin-card';
+            div.innerHTML = `<span><strong>${escapeHtml(prod.nombre)}</strong> - $${prod.precio?.toLocaleString() || '?'}</span> <div><button class="edit-product" data-idx="${idx}">Editar</button><button class="delete-product danger" data-idx="${idx}">Eliminar</button></div>`;
+            container.appendChild(div);
+        });
+        document.querySelectorAll('.edit-product').forEach(btn => btn.addEventListener('click', (e) => openProductModal(parseInt(btn.dataset.idx))));
+        document.querySelectorAll('.delete-product').forEach(btn => btn.addEventListener('click', (e) => { if(confirm('¿Eliminar producto?')) deleteProduct(parseInt(btn.dataset.idx)); }));
+    }
+
+    function openCategoryModal(key = null) {
+        const modal = document.getElementById('categoryModal');
+        document.getElementById('categoryModalTitle').innerText = key ? 'Editar categoría' : 'Nueva categoría';
+        document.getElementById('categoryName').value = key ? menuStructure[key].titulo : '';
+        const saveBtn = document.getElementById('saveCategoryBtn');
+        saveBtn.onclick = () => {
+            const newName = document.getElementById('categoryName').value.trim();
+            if(!newName) return alert('Ingrese nombre');
+            if(key) {
+                menuStructure[key].titulo = newName;
+            } else {
+                const newKey = 'cat_' + Date.now();
+                menuStructure[newKey] = { titulo: newName, items: [] };
+            }
+            saveMenuToLocal();
+            refreshFullUI();
+            modal.style.display = 'none';
+        };
+        modal.style.display = 'flex';
+    }
+
+    function deleteCategory(key) {
+        delete menuStructure[key];
+        saveMenuToLocal();
+        refreshFullUI();
+    }
+
+    function openProductModal(idx = null) {
+        const catKey = document.getElementById('adminCategorySelect').value;
+        if(!catKey) return alert('Selecciona una categoría primero');
+        const modal = document.getElementById('productModal');
+        document.getElementById('productModalTitle').innerText = idx !== null ? 'Editar producto' : 'Nuevo producto';
+        if(idx !== null) {
+            const prod = menuStructure[catKey].items[idx];
+            document.getElementById('productName').value = prod.nombre;
+            document.getElementById('productPrice').value = prod.precio || '';
+            document.getElementById('productDesc').value = prod.desc || '';
+        } else {
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productDesc').value = '';
+        }
+        const saveBtn = document.getElementById('saveProductBtn');
+        saveBtn.onclick = () => {
+            const name = document.getElementById('productName').value.trim();
+            if(!name) return alert('Nombre requerido');
+            const price = parseInt(document.getElementById('productPrice').value) || 0;
+            const desc = document.getElementById('productDesc').value;
+            if(idx !== null) {
+                menuStructure[catKey].items[idx] = { nombre: name, precio: price, desc: desc };
+            } else {
+                menuStructure[catKey].items.push({ nombre: name, precio: price, desc: desc });
+            }
+            saveMenuToLocal();
+            refreshFullUI();
+            modal.style.display = 'none';
+        };
+        modal.style.display = 'flex';
+    }
+
+    function deleteProduct(idx) {
+        const catKey = document.getElementById('adminCategorySelect').value;
+        menuStructure[catKey].items.splice(idx, 1);
+        saveMenuToLocal();
+        refreshFullUI();
+    }
+
+    function refreshFullUI() {
+        renderFullMenu();
+        if(adminLoggedIn) renderAdminPanel();
+        loadGeneralInfo();
+        if(currentActiveCategory) updateHeroForCategory(currentActiveCategory);
+    }
+
+    // Info general (persistente)
+    function loadGeneralInfo() {
+        document.getElementById('siteTitle').innerText = localStorage.getItem('gen_siteTitle') || "❄️ La Era de Hielo";
+        document.getElementById('siteSubtitle').innerText = localStorage.getItem('gen_subtitle') || "Restaurante & Heladería · Tibú, NS";
+        document.getElementById('hoursBadge').innerHTML = `<i class="far fa-clock"></i> ${localStorage.getItem('gen_hours') || "Cerrado · Abre a las 3:00 p.m."}`;
+        document.getElementById('footerAddress').innerText = localStorage.getItem('gen_address') || "Cra. 4 #6-54, Tibú, Norte de Santander";
+        document.getElementById('footerPhone').innerText = localStorage.getItem('gen_phone') || "316 7311299";
+        document.getElementById('footerWhatsapp').innerText = localStorage.getItem('gen_whatsapp') || "316 7311299";
+        let phone = localStorage.getItem('gen_phone') || "3167311299";
+        let clean = phone.replace(/\D/g, '');
+        let waUrl = `https://wa.me/57${clean}?text=Hola%21%20Quisiera%20hacer%20un%20pedido%20o%20reserva`;
+        document.getElementById('floatWhatsappBtn').href = waUrl;
+        document.getElementById('footerWhatsAppBtn').href = waUrl;
+        if(!currentActiveCategory && !document.getElementById('categoriaCompletaView').classList.contains('active')) resetHeroToDefault();
+    }
+
+    function openGeneralModal() {
+        const modal = document.getElementById('generalModal');
+        document.getElementById('genSiteTitle').value = localStorage.getItem('gen_siteTitle') || "❄️ La Era de Hielo";
+        document.getElementById('genSubtitle').value = localStorage.getItem('gen_subtitle') || "Restaurante & Heladería · Tibú, NS";
+        document.getElementById('genHeroTitle').value = localStorage.getItem('gen_heroTitle') || "🍦 Sabor glaciar · Pasión tropical";
+        document.getElementById('genHeroTag').value = localStorage.getItem('gen_heroTag') || "Postres, comidas típicas, cervezas y más";
+        document.getElementById('genHours').value = localStorage.getItem('gen_hours') || "Cerrado · Abre a las 3:00 p.m.";
+        document.getElementById('genAddress').value = localStorage.getItem('gen_address') || "Cra. 4 #6-54, Tibú, Norte de Santander";
+        document.getElementById('genPhone').value = localStorage.getItem('gen_phone') || "316 7311299";
+        document.getElementById('genWhatsapp').value = localStorage.getItem('gen_whatsapp') || "316 7311299";
+        modal.style.display = 'flex';
+        document.getElementById('saveGeneralBtn').onclick = () => {
+            localStorage.setItem('gen_siteTitle', document.getElementById('genSiteTitle').value);
+            localStorage.setItem('gen_subtitle', document.getElementById('genSubtitle').value);
+            localStorage.setItem('gen_heroTitle', document.getElementById('genHeroTitle').value);
+            localStorage.setItem('gen_heroTag', document.getElementById('genHeroTag').value);
+            localStorage.setItem('gen_hours', document.getElementById('genHours').value);
+            localStorage.setItem('gen_address', document.getElementById('genAddress').value);
+            localStorage.setItem('gen_phone', document.getElementById('genPhone').value);
+            localStorage.setItem('gen_whatsapp', document.getElementById('genWhatsapp').value);
+            loadGeneralInfo();
+            if(currentActiveCategory) updateHeroForCategory(currentActiveCategory);
+            else resetHeroToDefault();
+            modal.style.display = 'none';
+            alert('Información actualizada');
+        };
+    }
+
+    // Login / Logout
+    function loginAdmin(email, password) {
+        if(email === 'admin@ejemplo.com' && password === 'admin123') {
+            adminLoggedIn = true;
+            localStorage.setItem('adminLogged', 'true');
+            document.getElementById('adminLockBtn').innerHTML = '<i class="fas fa-user-cog"></i>';
+            document.getElementById('adminLockBtn').classList.add('logged');
+            renderAdminPanel();
+            document.getElementById('loginModal').style.display = 'none';
+        } else {
+            alert('Credenciales incorrectas. Usuario: admin@ejemplo.com / Contraseña: admin123');
+        }
+    }
+    function logoutAdmin() {
+        adminLoggedIn = false;
+        localStorage.removeItem('adminLogged');
+        document.getElementById('adminLockBtn').innerHTML = '<i class="fas fa-lock"></i>';
+        document.getElementById('adminLockBtn').classList.remove('logged');
+        document.getElementById('adminPanelContainer').style.display = 'none';
+        renderFullMenu();
+        loadGeneralInfo();
+        if(currentActiveCategory) updateHeroForCategory(currentActiveCategory);
+    }
+    function checkAdminSession() {
+        if(localStorage.getItem('adminLogged') === 'true') {
+            adminLoggedIn = true;
+            document.getElementById('adminLockBtn').innerHTML = '<i class="fas fa-user-cog"></i>';
+            document.getElementById('adminLockBtn').classList.add('logged');
+            renderAdminPanel();
+        }
+    }
+
+    // Event listeners
+    document.getElementById('adminLockBtn').addEventListener('click', () => {
+        if(adminLoggedIn) {
+            if(confirm('¿Cerrar sesión de administrador?')) logoutAdmin();
+        } else {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+    });
+    document.getElementById('loginBtn').addEventListener('click', () => {
+        loginAdmin(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
+    });
+    document.getElementById('closeLoginModal').addEventListener('click', () => document.getElementById('loginModal').style.display = 'none');
+    document.getElementById('closeProductModal').addEventListener('click', () => document.getElementById('productModal').style.display = 'none');
+    document.getElementById('closeCategoryModal').addEventListener('click', () => document.getElementById('categoryModal').style.display = 'none');
+    document.getElementById('closeGeneralBtn').addEventListener('click', () => document.getElementById('generalModal').style.display = 'none');
+    document.getElementById('backToMenuBtn').addEventListener('click', volverAlMenu);
+    window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+
+    // Inicialización
+    renderFullMenu();
+    loadGeneralInfo();
+    checkAdminSession();
+    const urlCat = new URLSearchParams(window.location.search).get('categoria');
+    if(urlCat && menuStructure[urlCat]) mostrarCategoriaCompleta(urlCat);
+    else if(!urlCat && document.getElementById('mainMenuView')) document.getElementById('mainMenuView').style.display = 'block';
+</script>
+</body>
+</html>
